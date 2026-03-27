@@ -12,5 +12,181 @@ body {
   background-color: var(--bg-color);
   color: var(--font-color);
   font-family: var(--font-family);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Evita rolagens desnecessárias */
+}
+
+/* Área do Cabeçalho (Metadata) */
+#metadata-header {
+  padding: 20px 30px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+#song-title {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+#song-author {
+  margin: 5px 0 0 0;
+  font-size: 1.5rem;
+  opacity: 0.6;
+}
+
+/* Área do Teleprompter */
+#teleprompter-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5%;
+  text-align: center;
+}
+
+#slide-content {
   font-size: var(--font-size);
+  white-space: pre-wrap; /* Preserva as quebras de linha das estrofes */
+  line-height: 1.4;
+  transition: opacity 0.3s ease;
+  max-width: 90vw;
+}
+
+/* Estilo do Alerta "FIM DA MÚSICA" */
+#end-message {
+  color: #ff4c4c;
+  font-size: calc(var(--font-size) * 0.5);
+  font-weight: bold;
+  margin-top: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Controles Base (Opcional p/ botões na tela) */
+#controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 15px;
+  opacity: 0.2;
+  transition: opacity 0.3s ease;
+}
+
+#controls:hover {
+  opacity: 1;
+}
+
+#controls button {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.2s;
+}
+
+#controls button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Botão Flutuante de Configurações */
+.settings-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.settings-btn:hover {
+  color: #fff;
+}
+
+/* Menu de Configurações - Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #2a2a2a;
+  color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #444;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+}
+
+.setting-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.setting-group label {
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+.setting-group input, .setting-group select {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.setting-group input[type="color"] {
+  height: 45px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.btn-close {
+  background: #ff4c4c;
+  border: none;
+  padding: 12px;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1.2rem;
+  margin-top: 15px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-close:hover {
+  background: #ff3333;
 }

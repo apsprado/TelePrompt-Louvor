@@ -36,6 +36,7 @@ const App = {
         this.loadSettings();
         this.setupSettingsListeners();
         this.setupControlButtons();
+        this.setupFilePicker();
 
         // Carregar a lista de músicas a partir de um índice ou pasta
         await this.loadSongList();
@@ -71,17 +72,49 @@ const App = {
      */
     async loadSongList() {
         try {
-            const response = await fetch('listar_musicas.php');
+            const response = await fetch('musicas/index.json');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
             const files = await response.json();
-            console.log("App: Músicas encontradas:", files);
+            console.log("App: Músicas encontradas no index.json:", files);
             this.state.songList = files;
+            this.state.songMode = 'fetch'; // Músicas do servidor/index
         } catch (error) {
-            console.error("App: Falha ao listar músicas:", error.message);
+            console.warn("App: index.json não encontrado, use o botão para importar músicas.", error.message);
             this.state.songList = [];
+            this.state.songMode = 'fetch';
         }
+    },
+
+    /**
+     * Configura o botão de importar músicas via File API.
+     */
+    setupFilePicker() {
+        const fileInput = document.getElementById('file-picker');
+        const btnImport = document.getElementById('btn-import');
+
+        if (!fileInput || !btnImport) return;
+
+        btnImport.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files).filter(f => f.name.endsWith('.txt'));
+            if (files.length === 0) return;
+
+            // Ordena naturalmente
+            files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+            // Armazena os objetos File e faz parsing direto via FileReader
+            this.state.importedFiles = files;
+            this.state.songList = files.map((f, i) => i); // Índices como referência
+            this.state.songMode = 'file'; // Músicas via File API
+            this.state.currentSongIndex = 0;
+            this.state.currentSlideIndex = 0;
+
+            console.log("App: Músicas importadas:", files.map(f => f.name));
+            await this.loadSong(0);
+        });
     },
 
     /**
@@ -94,8 +127,18 @@ const App = {
         this.state.currentSongIndex = index;
         this.state.currentSlideIndex = 0;
 
-        const filepath = this.state.songList[index];
-        const songData = await LyricParser.fetchAndParse(filepath);
+        let songData = null;
+
+        if (this.state.songMode === 'file' && this.state.importedFiles) {
+            // Modo File API: lê o File diretamente com FileReader
+            const file = this.state.importedFiles[index];
+            const text = await this.readFileAsText(file);
+            songData = LyricParser.parseText(text);
+        } else {
+            // Modo fetch: busca do servidor/index.json
+            const filepath = this.state.songList[index];
+            songData = await LyricParser.fetchAndParse(filepath);
+        }
 
         if (songData) {
             this.state.currentSong = songData;
@@ -105,6 +148,20 @@ const App = {
         } else {
             this.dom.slideContent.textContent = "Erro ao carregar música.";
         }
+    },
+
+    /**
+     * Lê um objeto File como texto (Promise).
+     * @param {File} file
+     * @returns {Promise<string>}
+     */
+    readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file, 'UTF-8');
+        });
     },
 
     /**

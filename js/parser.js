@@ -11,7 +11,8 @@ class LyricParser {
     static async fetchAndParse(filepath) {
         try {
             // Adicionado timestamp query param para evitar cache agressivo durante desenvolvimento local
-            const response = await fetch(`${filepath}?t=${new Date().getTime()}`);
+            const encodedPath = encodeURI(filepath);
+            const response = await fetch(`${encodedPath}?t=${new Date().getTime()}`);
             if (!response.ok) {
                 throw new Error(`Erro ao carregar o arquivo: ${response.statusText}`);
             }

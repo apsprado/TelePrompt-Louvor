@@ -10,16 +10,25 @@ class LyricParser {
      */
     static async fetchAndParse(filepath) {
         try {
-            // Adicionado timestamp query param para evitar cache agressivo durante desenvolvimento local
-            const encodedPath = encodeURI(filepath);
-            const response = await fetch(`${encodedPath}?t=${new Date().getTime()}`);
+            // Constrói URL absoluta a partir da base da página
+            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const fullUrl = baseUrl + filepath;
+            const encodedUrl = encodeURI(fullUrl);
+
+            console.log("Parser: Tentando carregar:", encodedUrl);
+
+            const response = await fetch(encodedUrl);
+            console.log("Parser: Status da resposta:", response.status, response.statusText);
+
             if (!response.ok) {
-                throw new Error(`Erro ao carregar o arquivo: ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             const text = await response.text();
+            console.log("Parser: Texto bruto recebido, tamanho:", text.length);
             return this.parseText(text);
         } catch (error) {
-            console.error("Falha ao buscar letra:", error);
+            console.error("Parser: Falha ao buscar letra:", error.message);
+            console.error("Parser: Filepath original:", filepath);
             return null;
         }
     }

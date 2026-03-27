@@ -70,10 +70,18 @@ const App = {
      * Pode ser substituído por leitura de diretório ou integração com Google Drive.
      */
     async loadSongList() {
-        // Lista estática de músicas — adicione novos caminhos conforme necessário
-        this.state.songList = [
-            'musicas/01 - Exemplo.txt',
-        ];
+        try {
+            const response = await fetch('listar_musicas.php');
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const files = await response.json();
+            console.log("App: Músicas encontradas:", files);
+            this.state.songList = files;
+        } catch (error) {
+            console.error("App: Falha ao listar músicas:", error.message);
+            this.state.songList = [];
+        }
     },
 
     /**
